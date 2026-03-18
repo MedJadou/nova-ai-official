@@ -235,6 +235,32 @@ header {
 .imem { display:flex; align-items:center; gap:3px; font-size:.56rem; color:var(--cy); font-family:var(--fm); opacity:.6; }
 .imem i { width:5px; height:5px; border-radius:50%; background:var(--cy); display:inline-block; }
 
+
+/* ── CODE BLOCKS with labels ── */
+.cblock { margin:10px 0; border-radius:10px; overflow:hidden; border:1px solid rgba(124,48,255,.3); }
+.cbar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(124,48,255,.18); padding:6px 12px;
+  border-bottom:1px solid rgba(124,48,255,.2);
+}
+.clabel {
+  font-family:var(--fm); font-size:.7rem; font-weight:700;
+  color:var(--pg); letter-spacing:1px;
+}
+.cbtns { display:flex; gap:6px; align-items:center; }
+.cbtn {
+  padding:3px 10px; border-radius:5px; border:1px solid rgba(124,48,255,.4);
+  background:rgba(124,48,255,.12); color:var(--pg);
+  font-family:var(--fm); font-size:.65rem; cursor:pointer; transition:all .2s;
+}
+.cbtn:hover { background:rgba(124,48,255,.3); color:var(--wh); }
+.cbtn.run {
+  background:rgba(0,238,255,.1); border-color:rgba(0,238,255,.35); color:var(--cy);
+}
+.cbtn.run:hover { background:rgba(0,238,255,.25); color:#fff; }
+.cblock pre { background:rgba(0,0,0,.5); padding:12px 14px; overflow-x:auto; margin:0; }
+.cblock pre code { background:none; padding:0; color:var(--cy); font-size:.76rem; border-radius:0; }
+
 @media(max-width:520px) {
   .bub { font-size:.82rem; }
   .slabel { display:none; }
@@ -348,23 +374,50 @@ const scr=()=>{const m=document.getElementById('msgs');m.scrollTo({top:m.scrollH
 const cnt=()=>{const el=document.getElementById('mc');if(el)el.textContent=H.length+' msgs';};
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-// Markdown renderer
-function md(t){
-  // fenced code blocks
-  t=t.replace(/```(\w*)\n?([\s\S]*?)```/g,(_,l,c)=>`<pre><code>${esc(c.trim())}</code></pre>`);
-  // inline code
-  t=t.replace(/`([^`\n]+)`/g,(_,c)=>`<code>${esc(c)}</code>`);
-  // bold
+// ── RUN button ──
+function runCode(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const lang=el.getAttribute('data-lang')||'';
+  const code=el.textContent;
+  if(lang==='html'||lang===''){
+    const w=window.open('','_blank');
+    w.document.open(); w.document.write(code); w.document.close();
+  } else {
+    navigator.clipboard.writeText(code).then(()=>alert('Copied! Paste into your editor.'));
+  }
+}
+// ── COPY button ──
+function copyCode(id,btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  navigator.clipboard.writeText(el.textContent).then(()=>{
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent='Copy',1800);
+  });
+}
+let _ci=0;
+// ── Markdown + :// LABEL :// renderer ──
+function md(raw){
+  let t=raw;
+  // :// LABEL :// followed by code block
+  t=t.replace(/:\/\/\s*([A-Za-z0-9 _+#.\-]+?)\s*:\/\/\s*\n```([a-zA-Z]*)\n?([\s\S]*?)```/g,function(_,label,lang,code){
+    const id='cb'+(++_ci);
+    const isHtml=lang.toLowerCase()==='html'||label.trim().toLowerCase()==='html';
+    const runBtn=isHtml?'<button class="cbtn run" onclick="runCode(\''+id+'\')">&#9654; Run</button>':'';
+    return '<div class="cblock"><div class="cbar"><span class="clabel">:// '+label.trim().toUpperCase()+' ://</span><div class="cbtns">'+runBtn+'<button class="cbtn" onclick="copyCode(\''+id+'\',this)">Copy</button></div></div><pre><code id="'+id+'" data-lang="'+lang.toLowerCase()+'">'+esc(code.trim())+'</code></pre></div>';
+  });
+  // plain fenced code blocks
+  t=t.replace(/```([a-zA-Z]*)\n?([\s\S]*?)```/g,function(_,lang,code){
+    const id='cb'+(++_ci);
+    return '<div class="cblock"><div class="cbar"><span class="clabel">'+(lang||'code')+'</span><div class="cbtns"><button class="cbtn" onclick="copyCode(\''+id+'\',this)">Copy</button></div></div><pre><code id="'+id+'" data-lang="'+lang+'">'+esc(code.trim())+'</code></pre></div>';
+  });
+  t=t.replace(/`([^`\n]+)`/g,function(_,c){return '<code>'+esc(c)+'</code>';});
   t=t.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
-  // italic
   t=t.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
-  // h3
   t=t.replace(/^### (.+)$/gm,'<h3>$1</h3>');
-  // unordered list items
   t=t.replace(/^[-•] (.+)$/gm,'<li>$1</li>');
-  t=t.replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>');
-  // newlines (but not inside pre blocks)
-  t=t.replace(/\n(?!<\/?(pre|ul|li|h3))/g,'<br>');
+  t=t.replace(/\n(?!<)/g,'<br>');
   return t;
 }
 
