@@ -1,0 +1,12 @@
+{
+  "name": "nova-ai",
+  "version": "2.0.0",
+  "description": "Nova — The W AI. Free forever. Built by scout_jadou 💜",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
