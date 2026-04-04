@@ -1,60 +1,36 @@
-# ⟨NOVA⟩ — The W AI 💜
-### Free forever. Powered by Groq. Built by scout_jadou.
+# ⟨NOVA⟩ v7 — The W AI 💜
+Built by scout_jadou. Free forever on Groq.
 
----
+## Setup
 
-## Step 1 — Get your FREE Groq API key
-1. Go to **https://console.groq.com**
-2. Sign up (free, no credit card needed)
-3. Click **API Keys** → **Create API Key**
-4. Copy it (looks like: `gsk_...`)
+### 1. Get free Groq key
+→ console.groq.com → API Keys → Create Key
 
-## Step 2 — Install Node.js (one time only)
-Download from **https://nodejs.org** → click the LTS button → install
+### 2. (Optional) Get free Tavily key for deep search
+→ tavily.com → sign up free → get API key
+→ Paste it in Nova's Settings panel after launch
 
-## Step 3 — Run Nova
+### 3. Run
+**Windows:** double-click `start.bat`
+**Mac/Linux:** `npm install && GROQ_API_KEY=your-key node server.js`
 
-**Windows:** Double-click `start.bat`, paste your Groq key, done.
+Open http://localhost:3000
 
-**Mac/Linux:**
-```bash
-npm install
-GROQ_API_KEY=gsk_your_key_here node server.js
-```
+## Deploy free on Railway
+1. Push to GitHub
+2. railway.app → New Project → GitHub repo
+3. Add env vars:
+   - `GROQ_API_KEY` = your Groq key
+   - `TAVILY_API_KEY` = your Tavily key (optional, for deep search)
+4. Generate domain → share with the squad!
 
-Open **http://localhost:3000** 🚀
+## Features
+- 💬 Multiple conversations with sidebar
+- 🎤 Voice messages (Groq Whisper, free)
+- 🔍 Deep search toggle (needs free Tavily key)
+- 📸 Screenshot support (paste/drag/attach)
+- 💜 Personality modes: Goofy / Normal / Serious
+- ♾️ No token limits — 8192 max per response
+- 🟢 Green section labels inside code
 
----
-
-## Host online FREE so the whole GC can use it
-
-### Railway (recommended — easiest)
-1. https://railway.app → sign up free
-2. New Project → Deploy from GitHub
-   (push this folder to a GitHub repo first)
-3. Add environment variable: `GROQ_API_KEY` = your key
-4. Railway gives you a public URL → share with the squad!
-
-### Render
-1. https://render.com → New → Web Service
-2. Connect your GitHub repo
-3. Build command: `npm install`
-4. Start command: `node server.js`
-5. Add env var: `GROQ_API_KEY`
-
----
-
-## Why Groq is free
-Groq gives generous free-tier limits — way more than enough for a friend group.
-The model used is **Llama 3.3 70B** which is very capable.
-
----
-
-## Nova's features
-- 💜 Full personality — scout_jadou, JUSTUS, Rin, 7 souls lore all built in
-- 🧠 Persistent memory per browser (80 messages)
-- 💻 50+ languages, Roblox Luau expert
-- 🎨 Dark purple aesthetic, soul gems, floating particles
-- 📱 Works on mobile
-
-**Team Nova Forever 🐐**
+Team Nova Forever 🐐

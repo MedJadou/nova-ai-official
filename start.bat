@@ -1,7 +1,8 @@
 @echo off
 echo.
 echo ════════════════════════════════════
-echo   ^<NOVA^> Startup 💜  (Groq - Free!)
+echo   ^<NOVA^> v7 Startup 💜
+echo   Groq + Voice + Search + Multi-chat
 echo ════════════════════════════════════
 echo.
 
@@ -13,16 +14,20 @@ if not exist "node_modules\" (
 
 if "%GROQ_API_KEY%"=="" (
     echo Get your FREE Groq key at: https://console.groq.com
-    echo (Sign up ^> API Keys ^> Create Key)
     echo.
-    set /p GROQ_API_KEY="Paste your Groq API key here: "
+    set /p GROQ_API_KEY="Paste your Groq API key: "
+    echo.
+)
+
+if "%TAVILY_API_KEY%"=="" (
+    echo Optional: Get free Tavily key at https://tavily.com for deep search
+    echo Press Enter to skip.
+    set /p TAVILY_API_KEY="Tavily key (optional): "
     echo.
 )
 
 echo Starting Nova...
-echo.
-echo Open http://localhost:3000 in your browser!
-echo Share this with the squad too ^(on your local network^)
+echo Open http://localhost:3000
 echo.
 node server.js
 pause
