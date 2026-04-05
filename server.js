@@ -283,11 +283,13 @@ app.post('/api/chat', async (req, res) => {
     : 'meta-llama/llama-4-maverick-17b-128e-instruct';
 
   // Strip images for non-vision messages
+  // Strip extra fields (isVoice, searched, etc) — Groq only accepts role + content
   const cleanedMessages = recent.map(m => {
-    if (!Array.isArray(m.content)) return m;
-    if (hasImage) return m; // keep as-is for vision model
-    const text = m.content.filter(p => p.type === 'text').map(p => p.text).join('\n');
-    const hadImg = m.content.some(p => p.type === 'image_url');
+    const clean = { role: m.role, content: m.content };
+    if (!Array.isArray(clean.content)) return clean;
+    if (hasImage) return clean;
+    const text = clean.content.filter(p => p.type === 'text').map(p => p.text).join('\n');
+    const hadImg = clean.content.some(p => p.type === 'image_url');
     return { role: m.role, content: text + (hadImg ? '\n[image attached]' : '') };
   });
 
