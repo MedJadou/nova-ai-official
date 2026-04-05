@@ -234,7 +234,7 @@ async function groqChat(apiKey, messages, maxTokens) {
       'Authorization': 'Bearer ' + apiKey,
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+      model: 'llama-3.3-70b-versatile',
       max_tokens: maxTokens,
       temperature: 0.15,
       messages,
@@ -280,7 +280,7 @@ app.post('/api/chat', async (req, res) => {
   // Use vision model if image present
   const model = hasImage
     ? 'meta-llama/llama-4-scout-17b-16e-instruct'
-    : 'meta-llama/llama-4-maverick-17b-128e-instruct';
+    : 'llama-3.3-70b-versatile';
 
   // Strip images for non-vision messages
   // Strip extra fields (isVoice, searched, etc) — Groq only accepts role + content
@@ -331,7 +331,7 @@ app.post('/api/chat', async (req, res) => {
     if (!response.ok) {
       // Fallback model
       console.warn('Primary model failed, falling back');
-      const fb = await groqChat(apiKey, fullMessages, 8192);
+      const fb = await groqChat(apiKey, fullMessages.map(m => Array.isArray(m.content) ? {...m, content: m.content.filter(p=>p.type==='text').map(p=>p.text).join('\n')} : m), 8192);
       const fbData = await fb.json();
       if (!fb.ok) return res.status(fb.status).json({ error: fbData?.error?.message || 'API error' });
       return res.json({
@@ -358,7 +358,7 @@ app.listen(PORT, () => {
   console.log('\n════════════════════════════════════');
   console.log('  ⟨NOVA⟩ is ONLINE 💜');
   console.log('  http://localhost:' + PORT);
-  console.log('  Model: llama-4-maverick (8192 tokens)');
+  console.log('  Model: llama-3.3-70b-versatile (8192 tokens)');
   console.log('  Voice: Groq Whisper ✅');
   console.log('  Search: ' + (process.env.TAVILY_API_KEY ? 'Tavily ✅' : 'Add TAVILY_API_KEY'));
   console.log('════════════════════════════════════\n');
